@@ -1,1 +1,3 @@
-# CPSC483 assignment 1
+# CPSC483 Assignment
+
+## Assignment 1
