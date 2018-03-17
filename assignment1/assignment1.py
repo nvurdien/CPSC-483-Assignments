@@ -32,23 +32,27 @@ def main():
 
     ####### Polynomial order regression ########
     
-    # Fitting polynomial regression to the dataset
+    # Preprocessing: converting to polynomial matrix
     from sklearn.preprocessing import PolynomialFeatures
-    poly_reg = PolynomialFeatures(degree = 3)
-    X_poly = poly_reg.fit_transform(data_x_train) #getting polynomial matrix
-    poly_reg.fit(X_poly, data_y_train)
-    #X_poly = X_poly[:, 1:5]
-    lin_reg = linear_model.LinearRegression()
-    lin_reg.fit(X_poly, data_y_train) #fitting linear regression to polynomial matrix
+    poly_features = PolynomialFeatures(degree = 2)
+    X_poly = poly_features.fit_transform(X)
+
+    # Splitting the dataset into the Training set and Test set
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X_poly, y, test_size = 0.02, random_state = 0)
+
+    # Fitting polynomial regression to the dataset
+    from sklearn.linear_model import LinearRegression
+    #poly_features.fit(X_poly, y_train)
+    lin_reg = LinearRegression()
+    lin_reg.fit(X_train, y_train)
 
     # Model prediction using test set
-    y_pred = lin_reg.predict(data_x_test)
-    print(y_pred)
-    #print(data_y_test)
-    print (data_y_pred)
+    y_pred = lin_reg.predict(X_test)
     
     #plot results
-    plt.figure(2)
+    print(y_pred)
+    print(data_y_test)
 
 if __name__ == "__main__":
     main()
