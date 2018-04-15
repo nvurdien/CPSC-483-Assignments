@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 from sklearn import linear_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -22,10 +23,15 @@ def main():
     data_x_train, data_x_test, data_y_train, data_y_test = train_test_split(X, y, test_size=0.2, random_state=0)
     regr = linear_model.LinearRegression()
     regr.fit(data_x_train, data_y_train)
+    print('weights: ')
+    print(regr.coef_)
+    print('Intercept: ')
+    print(regr.intercept_)
     data_y_pred = regr.predict(data_x_test)
     print("\nMultiple Linear Regression Errors:")
     print("Mean Absolute Error", mean_absolute_error(data_y_test, data_y_pred))
     print("Mean Squared Error", mean_squared_error(data_y_test, data_y_pred))
+
 
     ######################## Polynomial fit ########################
 
@@ -40,6 +46,20 @@ def main():
     from sklearn.linear_model import LinearRegression
     lin_reg = LinearRegression()
     lin_reg.fit(X_train, y_train)
+    print('weights: ', 'num = ', len(lin_reg.coef_))
+    print('next num = ', len(poly_features.get_feature_names()))
+    print(poly_features.get_feature_names())
+    print("[", end="")
+    f = '{0:.20f}'
+    for x_ in lin_reg.coef_:
+        print(f.format(float(x_)), ", ", end="")
+    print("]")
+    print('number of weights:')
+
+    for x, y in zip(poly_features.get_feature_names(), lin_reg.coef_):
+        print("(", x, ") ", " * ", f.format(float(y)), " + ", end="")
+    print('Intercept: ')
+    print(lin_reg.intercept_)
 
     # Model prediction using test set
     y_pred = lin_reg.predict(X_test)
