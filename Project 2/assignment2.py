@@ -153,6 +153,8 @@ class Income(Enum):
         return self.value
 
 
+# compares an value to see if it matches the given state
+# returns matching state or other if no matching state is found
 def comparison(value, state):
     for name, member in state.__members__.items():
         if value.strip() == member.fullname:
@@ -161,37 +163,54 @@ def comparison(value, state):
 
 
 def main():
+    # creates list from csv file
     filename = 'Dataset.csv'
     raw_data = open(filename, 'rt')
     reader = csv.reader(raw_data, delimiter=',', quoting=csv.QUOTE_NONE)
     x = list(reader)
 
-    label_names = ['<=50K', '>50K']
+    # instantiate necessary variables for classification
+    # labels - what we are trying to find
     labels = []
-    feature_names = ['age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation',
-                     'relationship', 'gender', 'capital_gain', 'capital_loss', 'hours'
-                     ]
+    # feature_names - categories available
+    feature_names = [
+        'age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender',
+        'capital_gain', 'capital_loss', 'hours'
+    ]
+    # features - feature values
     features = []
+    # features_w_names - names of each feature
     features_w_names = []
 
     for train in x:
-        labels.append(comparison(train[11], Income).value)
+        # finds the enumeration associated with each value in work class, education, marital status, occupation,
+        # relationship and gender
         work_class = comparison(train[1], WorkClass)
         education = comparison(train[2], EducationLevel)
         marital_status = comparison(train[4], MaritalStatus)
         occupation = comparison(train[5], Occupation)
         relationship = comparison(train[6], Relationship)
         gender = comparison(train[7], Gender)
-        features.append([float(train[0].strip()), work_class.value, education.value, float(train[3].strip()),
-                         marital_status.value, occupation.value, relationship.value, gender.value,
-                         float(train[8].strip()), float(train[9].strip()), float(train[10].strip())
-                         ])
-        features_w_names.append([float(train[0].strip()), work_class.fullname, education.fullname,
-                                 float(train[3].strip()), marital_status.fullname, occupation.fullname,
-                                 relationship.fullname, gender.fullname, float(train[8].strip()),
-                                 float(train[9].strip()), float(train[10].strip())
-                                 ])
 
+        # adds income value to the labels array because thats what we want to find
+        labels.append(comparison(train[11], Income).value)
+
+        # appends rest of values into available features
+        features.append([
+            float(train[0].strip()), work_class.value, education.value, float(train[3].strip()),
+            marital_status.value, occupation.value, relationship.value, gender.value,
+            float(train[8].strip()), float(train[9].strip()), float(train[10].strip())
+        ])
+
+        # appends feature names into a separate array
+        features_w_names.append([
+            float(train[0].strip()), work_class.fullname, education.fullname,
+            float(train[3].strip()), marital_status.fullname, occupation.fullname,
+            relationship.fullname, gender.fullname, float(train[8].strip()),
+            float(train[9].strip()), float(train[10].strip())
+        ])
+
+    # sets up training and testing arrays for classification
     train, test, train_labels, test_labels = train_test_split(features, labels, test_size=0.2, random_state=0)
 
     # Naive Bayes #
