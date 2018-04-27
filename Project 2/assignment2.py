@@ -176,10 +176,10 @@ def main():
     # labels - what we are trying to find
     labels = []
     # feature_names - categories available
-    feature_names = [
-        'age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender',
-        'capital_gain', 'capital_loss', 'hours'
-    ]
+    # feature_names = [
+    #     'age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender',
+    #     'capital_gain', 'capital_loss', 'hours'
+    # ]
     # features - feature values
     features = []
     # features_w_names - names of each feature
@@ -222,6 +222,7 @@ def main():
     naiveBayesModel = naiveBayes.fit(train, train_labels)
     naiveBayesPredicted = naiveBayes.predict(test)
     print(naiveBayesPredicted)
+    print(naiveBayesModel)
     print(accuracy_score(test_labels, naiveBayesPredicted))
 
     # Decision Tree #
@@ -230,6 +231,7 @@ def main():
     decisionTreeModel = decisionTree.fit(train, train_labels)
     decisionTreePredicted = decisionTree.predict(test)
     print(decisionTreePredicted)
+    print(decisionTreeModel)
     print(accuracy_score(test_labels, decisionTreePredicted))
 
     # Multilayer Perceptron #
@@ -238,6 +240,7 @@ def main():
     multilayerPerceptronModel = multilayerPerceptron.fit(train, train_labels)
     multilayerPerceptronPredicted = multilayerPerceptron.predict(test)
     print(multilayerPerceptronPredicted)
+    print(multilayerPerceptronModel)
     print(accuracy_score(test_labels, multilayerPerceptronPredicted))
 
 

@@ -1,10 +1,8 @@
 import csv
-import pandas as pd
 from sklearn import linear_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
-# import matplotlib.pyplot as plt
 
 
 def main():
@@ -18,7 +16,7 @@ def main():
         y.append(float(train[4]))
         X.append((float(train[0]), float(train[1]), float(train[2]), float(train[3])))
 
-    ######################## Multiple Linear Regression ########################
+    # Multiple Linear Regression #
 
     data_x_train, data_x_test, data_y_train, data_y_test = train_test_split(X, y, test_size=0.2, random_state=0)
     regr = linear_model.LinearRegression()
@@ -32,8 +30,7 @@ def main():
     print("Mean Absolute Error", mean_absolute_error(data_y_test, data_y_pred))
     print("Mean Squared Error", mean_squared_error(data_y_test, data_y_pred))
 
-
-    ######################## Polynomial fit ########################
+    # Polynomial fit #
 
     # Preprocessing: converting to polynomial matrix
     poly_features = PolynomialFeatures(degree=4)
