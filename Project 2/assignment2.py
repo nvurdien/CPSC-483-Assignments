@@ -139,8 +139,8 @@ class Gender(Enum):
 
 
 class Income(Enum):
-    OVER_50 = 0, '>50K'
-    LESS_THAN_50 = 1, '<=50K'
+    LESS_THAN_50 = 0, '<=50K'
+    OVER_50 = 1, '>50K'
     OTHER = 2, 'Unknown'
 
     def __new__(cls, value, name):
@@ -153,6 +153,13 @@ class Income(Enum):
         return self.value
 
 
+def comparison(value, state):
+    for name, member in state.__members__.items():
+        if value.strip() == member.fullname:
+            return member
+    return state.OTHER
+
+
 def main():
     filename = 'Dataset.csv'
     raw_data = open(filename, 'rt')
@@ -161,141 +168,20 @@ def main():
 
     label_names = ['<=50K', '>50K']
     labels = []
-    feature_names = ['age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation',
-                     'relationship', 'gender', 'capital_gain', 'capital_loss', 'hours']
+    feature_names = ['age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender', 'capital_gain', 'capital_loss', 'hours']
     features = []
+    features_w_names = []
 
     for train in x:
-        income, work_class = ''
-        for name, member in Income.__members__.items():
-            if train[11].strip() == member.fullname:
-                income = member.value
-        if income == '':
-            labels.append(Income.OTHER)
-        else:
-            labels.append(income)
-
-        for name, member in WorkClass.__members__.items():
-            if train[1].strip() == member.fullname:
-                work_class = member.value
-
-        if train[1].strip() == 'Private':
-            work_class = WorkClass.PRIVATE
-        elif train[1].strip() == 'Self-emp-not-inc':
-            work_class = WorkClass.SELF_EMP_NOT_INC
-        elif train[1].strip() == 'Self-emp-inc':
-            work_class = WorkClass.SELF_EMP_INC
-        elif train[1].strip() == 'Federal-gov':
-            work_class = WorkClass.FEDERAL_GOV
-        elif train[1].strip() == 'Local-gov':
-            work_class = WorkClass.LOCAL_GOV
-        elif train[1].strip() == 'State-gov':
-            work_class = WorkClass.STATE_GOV
-        elif train[1].strip() == 'Without-pay':
-            work_class = WorkClass.WITHOUT_PAY
-        elif train[1].strip() == 'Never-worked':
-            work_class = WorkClass.NEVER_WORKED
-        else:
-            work_class = WorkClass.OTHER
-
-        if train[2].strip() == 'Bachelors':
-            education = EducationLevel.BACHELORS
-        elif train[2].strip() == 'Some-college':
-            education = EducationLevel.SOME_COLLEGE
-        elif train[2].strip() == '11th':
-            education = EducationLevel.ELEVENTH
-        elif train[2].strip() == 'HS-grad':
-            education = EducationLevel.HS_GRAD
-        elif train[2].strip() == 'Prof-school':
-            education = EducationLevel.PROF_SCHOOL
-        elif train[2].strip() == 'Assoc-acdm':
-            education = EducationLevel.ASSOC_ACDM
-        elif train[2].strip() == 'Assoc-voc':
-            education = EducationLevel.ASSOC_VOC
-        elif train[2].strip() == '9th':
-            education = EducationLevel.NINTH
-        elif train[2].strip() == '7th-8th':
-            education = EducationLevel.SEVENTH_EIGTH
-        elif train[2].strip() == '12th':
-            education = EducationLevel.TWELVETH
-        elif train[2].strip() == 'Masters':
-            education = EducationLevel.MASTERS
-        elif train[2].strip() == '1st-4th':
-            education = EducationLevel.FIRST_FOURTH
-        elif train[2].strip() == '10th':
-            education = EducationLevel.TENTH
-        elif train[2].strip() == 'Doctorate':
-            education = EducationLevel.DOCTORATE
-        elif train[2].strip() == '5th-6th':
-            education = EducationLevel.FIFTH_SIXTH
-        elif train[2].strip() == 'Preschool':
-            education = EducationLevel.PRESCHOOL
-        else:
-            education = EducationLevel.OTHER
-
-        if train[4].strip() == 'Married-civ-spouse':
-            marital_status = MaritalStatus.MARRIED_CIV_SPOUSE
-        elif train[4].strip() == 'Divorced':
-            marital_status = MaritalStatus.DIVORCED
-        elif train[4].strip() == 'Never-married':
-            marital_status = MaritalStatus.NEVER_MARRIED
-        elif train[4].strip() == 'Separated':
-            marital_status = MaritalStatus.SEPARATED
-        elif train[4].strip() == 'Widowed':
-            marital_status = MaritalStatus.WIDOWED
-        elif train[4].strip() == 'Married-spouse-absent':
-            marital_status = MaritalStatus.MARRIED_SPOUSE_ABSENT
-        elif train[4].strip() == 'Married-AF-spouse':
-            marital_status = MaritalStatus.MARRIED_AF_SPOUSE
-        else:
-            marital_status = MaritalStatus.OTHER
-
-        if train[5].strip() == 'Tech-support':
-            occupation = Occupation.TECH_SUPPORT
-        elif train[5].strip() == 'Craft-repair':
-            occupation = Occupation.CRAFT_REPAIR
-        elif train[5].strip() == 'Other-service':
-            occupation = Occupation.OTHER_SERVICE
-        elif train[5].strip() == 'Sales':
-            occupation = Occupation.SALES
-        elif train[5].strip() == 'Exec-managerial':
-            occupation = Occupation.EXEC_MANAGERIAL
-        elif train[5].strip() == 'Transport-moving':
-            occupation = Occupation.TRANSPORT_MOVING
-        elif train[5].strip() == 'Priv-house-serv':
-            occupation = Occupation.PRIV_HOUSE_SERV
-        elif train[5].strip() == 'Protective-serv':
-            occupation = Occupation.PROTECTIVE_SERV
-        elif train[5].strip() == 'Armed-Forces':
-            occupation = Occupation.ARMED_FORCES
-        else:
-            occupation = Occupation.OTHER
-
-        if train[6].strip() == 'Wife':
-            relationship = Relationship.WIFE
-        elif train[6].strip() == 'Own-child':
-            relationship = Relationship.OWN_CHILD
-        elif train[6].strip() == 'Husband':
-            relationship = Relationship.HUSBAND
-        elif train[6].strip() == 'Not-in-family':
-            relationship = Relationship.NOT_IN_FAMILY
-        elif train[6].strip() == 'Other-relative':
-            relationship = Relationship.OTHER_RELATIVE
-        elif train[6].strip() == 'Unmarried':
-            relationship = Relationship.UNMARRIED
-        else:
-            relationship = Relationship.OTHER
-
-        if train[7].strip() == 'Female':
-            gender = Gender.FEMALE
-        elif train[7].strip() == 'Male':
-            gender = Gender.MALE
-        else:
-            gender = Gender.OTHER
-
-        features.append([float(train[0].strip()), work_class.value, education.value, float(train[3].strip()), marital_status.value,
-                         occupation.value, relationship.value, gender.value, float(train[8].strip()), float(train[9].strip()),
-                         float(train[10].strip())])
+        labels.append(comparison(train[11], Income).value)
+        work_class = comparison(train[1], WorkClass)
+        education = comparison(train[2], EducationLevel)
+        marital_status = comparison(train[4], MaritalStatus)
+        occupation = comparison(train[5], Occupation)
+        relationship = comparison(train[6], Relationship)
+        gender = comparison(train[7], Gender)
+        features.append([float(train[0].strip()), work_class.value, education.value, float(train[3].strip()), marital_status.value, occupation.value, relationship.value, gender.value, float(train[8].strip()), float(train[9].strip()), float(train[10].strip())])
+        features_w_names.append([float(train[0].strip()), work_class.fullname, education.fullname, float(train[3].strip()), marital_status.fullname, occupation.fullname, relationship.fullname, gender.fullname, float(train[8].strip()), float(train[9].strip()), float(train[10].strip())])
 
     train, test, train_labels, test_labels = train_test_split(features, labels, test_size=0.2, random_state=0)
 
