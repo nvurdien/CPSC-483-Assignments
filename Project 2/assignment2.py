@@ -156,10 +156,13 @@ class Income(Enum):
 # compares an value to see if it matches the given state
 # returns matching state or other if no matching state is found
 def comparison(value, state):
+    # gets enumeration
     for member in state:
         if value.strip() == member.fullname:
             return member
-    return state.OTHER
+    # else returns other
+    else:
+        return state.OTHER
 
 
 def main():
