@@ -168,7 +168,9 @@ def main():
 
     label_names = ['<=50K', '>50K']
     labels = []
-    feature_names = ['age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender', 'capital_gain', 'capital_loss', 'hours']
+    feature_names = ['age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation',
+                     'relationship', 'gender', 'capital_gain', 'capital_loss', 'hours'
+                     ]
     features = []
     features_w_names = []
 
@@ -180,8 +182,15 @@ def main():
         occupation = comparison(train[5], Occupation)
         relationship = comparison(train[6], Relationship)
         gender = comparison(train[7], Gender)
-        features.append([float(train[0].strip()), work_class.value, education.value, float(train[3].strip()), marital_status.value, occupation.value, relationship.value, gender.value, float(train[8].strip()), float(train[9].strip()), float(train[10].strip())])
-        features_w_names.append([float(train[0].strip()), work_class.fullname, education.fullname, float(train[3].strip()), marital_status.fullname, occupation.fullname, relationship.fullname, gender.fullname, float(train[8].strip()), float(train[9].strip()), float(train[10].strip())])
+        features.append([float(train[0].strip()), work_class.value, education.value, float(train[3].strip()),
+                         marital_status.value, occupation.value, relationship.value, gender.value,
+                         float(train[8].strip()), float(train[9].strip()), float(train[10].strip())
+                         ])
+        features_w_names.append([float(train[0].strip()), work_class.fullname, education.fullname,
+                                 float(train[3].strip()), marital_status.fullname, occupation.fullname,
+                                 relationship.fullname, gender.fullname, float(train[8].strip()),
+                                 float(train[9].strip()), float(train[10].strip())
+                                 ])
 
     train, test, train_labels, test_labels = train_test_split(features, labels, test_size=0.2, random_state=0)
 
