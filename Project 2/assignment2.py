@@ -1,10 +1,46 @@
+from __future__ import division
 import csv
+import numpy as np
 from enum import Enum
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 from sklearn import tree
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import _tree
 from sklearn.neural_network import MLPClassifier
+
+h = .02  # step size in the mesh
+
+names = ["Decision Tree", "Neural Net", "Naive Bayes"]
+
+classifiers = [tree.DecisionTreeClassifier(random_state=0), MLPClassifier(random_state=0, hidden_layer_sizes=(2,)), GaussianNB()]
+
+
+def tree_to_code(trees, feature_names):
+    file = open('decisionTreeRules.txt', '+w')
+    tree_ = trees.tree_
+    feature_name = [
+        feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
+        for i in tree_.feature
+    ]
+    # print("def tree({}):".format(", ".join(feature_names)))
+
+    def recurse(node, depth):
+        indent = "  " * depth
+        if tree_.feature[node] != _tree.TREE_UNDEFINED:
+            name = feature_name[node]
+            threshold = tree_.threshold[node]
+            print(indent, "if", name, " <=", threshold, ":", file=file)
+            recurse(tree_.children_left[node], depth + 1)
+            print(indent, "else:  # if", name, "> ", threshold, file=file)
+            recurse(tree_.children_right[node], depth + 1)
+        else:
+            print(indent, "return ", tree_.value[node], file=file)
+
+    recurse(0, 1)
 
 
 class WorkClass(Enum):
@@ -37,8 +73,8 @@ class EducationLevel(Enum):
     ASSOC_ACDM = 5, 'Assoc-acdm'
     ASSOC_VOC = 6, 'Assoc-voc'
     NINTH = 7, '9th'
-    SEVENTH_EIGTH = 8, '7th-8th'
-    TWELVETH = 9, '12th'
+    SEVENTH_EIGHTH = 8, '7th-8th'
+    TWELFTH = 9, '12th'
     MASTERS = 10, 'Masters'
     FIRST_FOURTH = 11, '1st-4th'
     TENTH = 12, '10th'
@@ -85,7 +121,7 @@ class Occupation(Enum):
     EXEC_MANAGERIAL = 4, 'Exec-managerial'
     PROF_SPECIALTY = 5, 'Prof-specialty'
     HANDLERS_CLEANERS = 6, 'Handlers-cleaners'
-    MACHINE_OP_INSPCT = 7, 'Machine-op-inspct'
+    MACHINE_OP_INSPECT = 7, 'Machine-op-inspct'
     ADM_CLERICAL = 8, 'Adm-clerical'
     FARMING_FISHING = 9, 'Farming-fishing'
     TRANSPORT_MOVING = 10, 'Transport-moving'
@@ -176,18 +212,55 @@ def main():
     # labels - what we are trying to find
     labels = []
     # feature_names - categories available
-    # feature_names = [
-    #     'age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender',
-    #     'capital_gain', 'capital_loss', 'hours'
-    # ]
+    feature_names = [
+        'age', 'work_class', 'education', 'years_education', 'marital_status', 'occupation', 'relationship', 'gender',
+        'capital_gain', 'capital_loss', 'hours'
+    ]
     # features - feature values
     features = []
     # features_w_names - names of each feature
     features_w_names = []
 
+    total_count = {
+
+    }
+
+    above_count = {
+    }
+
+    lower_count = {
+
+    }
+
+    for state in WorkClass:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+    for state in EducationLevel:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+    for state in MaritalStatus:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+    for state in Occupation:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+    for state in Relationship:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+    for state in Gender:
+        above_count[state] = 0
+        lower_count[state] = 0
+        total_count[state] = 0
+
     for train in x:
         # finds the enumeration associated with each value in work class, education, marital status, occupation,
         # relationship and gender
+        income = comparison(train[11], Income)
         work_class = comparison(train[1], WorkClass)
         education = comparison(train[2], EducationLevel)
         marital_status = comparison(train[4], MaritalStatus)
@@ -195,8 +268,29 @@ def main():
         relationship = comparison(train[6], Relationship)
         gender = comparison(train[7], Gender)
 
-        # adds income value to the labels array because thats what we want to find
-        labels.append(comparison(train[11], Income).value)
+        if income == Income.OVER_50:
+            above_count[work_class] += 1
+            above_count[education] += 1
+            above_count[marital_status] += 1
+            above_count[occupation] += 1
+            above_count[relationship] += 1
+            above_count[gender] += 1
+        elif income == Income.LESS_THAN_50:
+            lower_count[work_class] += 1
+            lower_count[education] += 1
+            lower_count[marital_status] += 1
+            lower_count[occupation] += 1
+            lower_count[relationship] += 1
+            lower_count[gender] += 1
+
+        total_count[work_class] += 1
+        total_count[education] += 1
+        total_count[marital_status] += 1
+        total_count[occupation] += 1
+        total_count[relationship] += 1
+        total_count[gender] += 1
+        # adds income value to the labels array because that's what we want to find
+        labels.append(income.value)
 
         # appends rest of values into available features
         features.append([
@@ -216,31 +310,45 @@ def main():
     # sets up training and testing arrays for classification
     train, test, train_labels, test_labels = train_test_split(features, labels, test_size=0.2, random_state=0)
 
+    print("without laplace")
+    for val in above_count:
+        if total_count[val] != 0:
+            print('There are', above_count[val]/total_count[val], 'above for', val)
+        else:
+            print('There are 0', val)
+
+    print("")
+    print("with laplace")
+    for val in above_count:
+        if total_count[val] != 0:
+            print('There are', (above_count[val]+1)/(total_count[val]+1), 'above for', val)
+
     # Naive Bayes #
 
     naiveBayes = GaussianNB()
-    naiveBayesModel = naiveBayes.fit(train, train_labels)
+    naiveBayes.fit(train, train_labels)
     naiveBayesPredicted = naiveBayes.predict(test)
     print(naiveBayesPredicted)
-    print(naiveBayesModel)
     print(accuracy_score(test_labels, naiveBayesPredicted))
 
     # Decision Tree #
 
     decisionTree = tree.DecisionTreeClassifier()
-    decisionTreeModel = decisionTree.fit(train, train_labels)
+    decisionTree.fit(train, train_labels)
     decisionTreePredicted = decisionTree.predict(test)
     print(decisionTreePredicted)
-    print(decisionTreeModel)
+    tree_to_code(decisionTree, feature_names)
     print(accuracy_score(test_labels, decisionTreePredicted))
 
     # Multilayer Perceptron #
 
-    multilayerPerceptron = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=0)
-    multilayerPerceptronModel = multilayerPerceptron.fit(train, train_labels)
+    multilayerPerceptron = MLPClassifier(hidden_layer_sizes=(1,), random_state=0)
+    multilayerPerceptron.fit(train, train_labels)
     multilayerPerceptronPredicted = multilayerPerceptron.predict(test)
     print(multilayerPerceptronPredicted)
-    print(multilayerPerceptronModel)
+    print(multilayerPerceptron.coefs_)
+    print(multilayerPerceptron.n_layers_)
+    print(multilayerPerceptron.intercepts_)
     print(accuracy_score(test_labels, multilayerPerceptronPredicted))
 
 
