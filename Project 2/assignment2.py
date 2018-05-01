@@ -81,7 +81,6 @@ class EducationLevel(Enum):
     DOCTORATE = 13, 'Doctorate'
     FIFTH_SIXTH = 14, '5th-6th'
     PRESCHOOL = 15, 'Preschool'
-    OTHER = 16, 'Unknown'
 
     def __new__(cls, value, name):
         member = object.__new__(cls)
@@ -101,7 +100,6 @@ class MaritalStatus(Enum):
     WIDOWED = 4, 'Widowed'
     MARRIED_SPOUSE_ABSENT = 5, 'Married-spouse-absent'
     MARRIED_AF_SPOUSE = 6, 'Married-AF-spouse'
-    OTHER = 7, 'Unknown'
 
     def __new__(cls, value, name):
         member = object.__new__(cls)
@@ -147,7 +145,6 @@ class Relationship(Enum):
     NOT_IN_FAMILY = 3, 'Not-in-family'
     OTHER_RELATIVE = 4, 'Other-relative'
     UNMARRIED = 5, 'Unmarried'
-    OTHER = 6, 'Unknown'
 
     def __new__(cls, value, name):
         member = object.__new__(cls)
@@ -162,7 +159,6 @@ class Relationship(Enum):
 class Gender(Enum):
     FEMALE = 0, 'Female'
     MALE = 1, 'Male'
-    OTHER = 2, 'Unknown'
 
     def __new__(cls, value, name):
         member = object.__new__(cls)
@@ -177,7 +173,6 @@ class Gender(Enum):
 class Income(Enum):
     LESS_THAN_50 = 0, '<=50K'
     OVER_50 = 1, '>50K'
-    OTHER = 2, 'Unknown'
 
     def __new__(cls, value, name):
         member = object.__new__(cls)
@@ -321,7 +316,7 @@ def main():
     print("with laplace")
     for val in above_count:
         if total_count[val] != 0:
-            print('There are', (above_count[val]+1)/(total_count[val]+1), 'above for', val)
+            print('There are', (above_count[val]+2)/(total_count[val]+2), 'above for', val)
 
     # Naive Bayes #
 
